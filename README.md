@@ -1,34 +1,113 @@
-# Proyecto-Final-UD1-IAPWE
-### Documentación Extendida del Proyecto
+### Proyecto-Final-UD1-IAPWE
 
 ---
 
 ## **Introducción**
-Este proyecto es una página web diseñada como un currículum vitae (CV) interactivo que incluye:
+Este proyecto representa una página web interactiva que funciona como un currículum vitae dinámico. Implementa funcionalidades clave como autenticación segura, internacionalización, almacenamiento de datos en una base de datos MySQL y cuestionarios interactivos. Todo el sistema está encapsulado en un entorno Docker para garantizar portabilidad y facilidad de despliegue.
 
-- Formulario de inicio de sesión con validación.
-- Gestión de idiomas (español e inglés).
-- Cuestionario interactivo con almacenamiento de resultados.
-- Base de datos para almacenar usuarios y calificaciones.
-- Configuración y despliegue mediante Docker, proporcionando un entorno modular, portátil y profesional.
-
-A continuación, se detalla la configuración, despliegue y lógica del proyecto con un tutorial paso a paso.
+Esta documentación incluye una explicación detallada de la lógica de cada archivo y pasos claros para el despliegue en múltiples plataformas.
 
 ---
 
-## **Configuración de Docker**
+## **Lógica de los Archivos**
 
-Docker se utiliza para gestionar el servidor web (PHP y Apache), la base de datos MySQL y PHPMyAdmin. Todo el entorno está definido en un archivo `docker-compose.yml`.
+### **1. `cuestionario.php`**
+Este archivo maneja la lógica del cuestionario interactivo. 
 
-### **Requisitos Previos**
-1. **Instalar Docker**:
-   - [Guía oficial de instalación](https://docs.docker.com/get-docker/).
-2. **Instalar Docker Compose**:
-   - [Guía oficial de instalación](https://docs.docker.com/compose/install/).
+**Flujo de trabajo**:
+1. **Validación del Usuario**:
+   - Comprueba si el usuario ha iniciado sesión. Si no es así, redirige a `login.php`.
+2. **Evaluación del Cuestionario**:
+   - Calcula la puntuación comparando las respuestas del usuario con un conjunto de respuestas correctas definidas en `$correctAnswers`.
+3. **Almacenamiento de Resultados**:
+   - Guarda la puntuación en la base de datos MySQL asociada al usuario actual.
+4. **Redirección**:
+   - Redirige a `ver_notas.php` para que el usuario pueda visualizar su historial.
 
 ---
 
-### **Estructura del Proyecto**
+### **2. `db.php`**
+Archivo que configura la conexión a la base de datos mediante PDO.
+
+**Flujo de trabajo**:
+1. **Carga de Variables de Entorno**:
+   - Recupera las credenciales de la base de datos desde el entorno (`MYSQL_HOST`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`).
+2. **Establecimiento de Conexión**:
+   - Configura PDO con opciones para manejar errores, establecer el modo de recuperación de datos y optimizar la ejecución.
+3. **Manejo de Errores**:
+   - Si la conexión falla, muestra un mensaje de error claro para facilitar la depuración.
+
+---
+
+### **3. `error.php`**
+Página simple que muestra un mensaje cuando el usuario excede el número permitido de intentos de inicio de sesión.
+
+**Flujo de trabajo**:
+1. Muestra un mensaje explicativo al usuario.
+2. Incluye un enlace para volver al formulario de inicio de sesión.
+
+---
+
+### **4. `index.php`**
+Archivo principal que redirige automáticamente a `login.php`.
+
+**Flujo de trabajo**:
+1. **Inicia Sesión**:
+   - Llama a `session_start()` para gestionar sesiones.
+2. **Redirige**:
+   - Dirige inmediatamente a `login.php` para garantizar que el usuario pase primero por el proceso de autenticación.
+
+---
+
+### **5. `inicio.php`**
+Página principal tras el inicio de sesión.
+
+**Flujo de trabajo**:
+1. **Validación del Usuario**:
+   - Comprueba si el usuario ha iniciado sesión. Si no es así, redirige a `login.php`.
+2. **Internacionalización**:
+   - Permite cambiar dinámicamente entre español e inglés, cargando el archivo de idioma correspondiente.
+3. **Contenido Dinámico**:
+   - Muestra información del usuario y secciones interactivas como hobbies, información personal y contacto.
+
+---
+
+### **6. `login.php`**
+Gestor de autenticación de usuarios.
+
+**Flujo de trabajo**:
+1. **Validación de Credenciales**:
+   - Verifica el usuario y la contraseña ingresados contra la base de datos.
+2. **Gestión de Intentos Fallidos**:
+   - Incrementa un contador de intentos fallidos almacenado en la sesión. Redirige a `error.php` después de 3 intentos.
+3. **Inicio de Sesión**:
+   - Si las credenciales son correctas, almacena el ID del usuario en la sesión y redirige a `inicio.php`.
+
+---
+
+### **7. `logout.php`**
+Archivo encargado de cerrar la sesión.
+
+**Flujo de trabajo**:
+1. Destruye la sesión activa.
+2. Redirige a `login.php`.
+
+---
+
+### **8. `ver_notas.php`**
+Muestra el historial de calificaciones del usuario.
+
+**Flujo de trabajo**:
+1. **Validación del Usuario**:
+   - Comprueba si el usuario ha iniciado sesión. Si no, redirige a `login.php`.
+2. **Recuperación de Datos**:
+   - Consulta la base de datos para obtener las calificaciones del usuario.
+3. **Presentación**:
+   - Muestra las calificaciones en una tabla, ordenadas por fecha.
+
+---
+
+## **Estructura del Proyecto**
 
 ```plaintext
 .
@@ -51,223 +130,82 @@ Docker se utiliza para gestionar el servidor web (PHP y Apache), la base de dato
     ├── lang/
     │   ├── en.php
     │   └── es.php
-    └── Despliegue-BD.sql
 ```
+
+### **Descripción de los Archivos Clave**
+- **`Dockerfile`**: Configura PHP y Apache con las extensiones necesarias.
+- **`docker-compose.yml`**: Orquesta los servicios (PHP-Apache, MySQL, PHPMyAdmin).
+- **`mysql-init/init.sql`**: Inicializa la base de datos con las tablas requeridas.
+- **`reset.sh`**: Script para reiniciar los contenedores y limpiar datos de MySQL.
 
 ---
 
-### **Detalles de Configuración**
+## **Pasos para el Despliegue**
 
-#### **`docker-compose.yml`**
-Define los contenedores necesarios para el proyecto.
-
-```yaml
-version: '3.8'
-
-services:
-  php-apache:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: php-apache
-    volumes:
-      - ./src:/var/www/html
-    ports:
-      - "8080:80"
-    environment:
-      MYSQL_HOST: db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root_password
-      MYSQL_DATABASE: cv_web
-    depends_on:
-      - db
-
-  db:
-    image: mysql:5.7
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: cv_web
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./mysql_data:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d
-    command: --default-authentication-plugin=mysql_native_password
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: root_password
-    ports:
-      - "8081:80"
+### **1. Clonar el Repositorio**
+```bash
+git clone https://github.com/tu-repositorio/proyecto-cv.git
+cd proyecto-cv
 ```
 
-#### **`Dockerfile`**
-Configura PHP con Apache.
-
-```dockerfile
-FROM php:7.4-apache
-
-COPY php.ini /usr/local/etc/php/
-RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
+### **2. Configurar Variables de Entorno**
+Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+```plaintext
+PHP_APACHE_PORT=8080
+MYSQL_HOST=mysql
+MYSQL_USER=root
+MYSQL_PASSWORD=root_password
+MYSQL_DATABASE=cv_web
+MYSQL_PORT=3306
+PHPMYADMIN_PORT=8081
+PHP_ENV=development
+MYSQL_ROOT_PASSWORD=root_password
 ```
 
-#### **`mysql-init/init.sql`**
-Este script crea la base de datos y sus tablas iniciales.
-
-```sql
-CREATE DATABASE IF NOT EXISTS cv_web;
-USE cv_web;
-
-CREATE TABLE usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE notas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    nota DECIMAL(5, 2) NOT NULL,
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+### **3. Construir y Levantar los Contenedores**
+Ejecuta:
+```bash
+docker-compose up -d
 ```
+
+### **4. Acceder a la Aplicación**
+- Página principal: [http://localhost:8080](http://localhost:8080)
+- PHPMyAdmin: [http://localhost:8081](http://localhost:8081)
 
 ---
 
-## **Tutorial: Cómo Desplegar la Página**
+## **Despliegue por Sistema Operativo**
 
-1. **Clonar el Repositorio**
-   - Copiar el proyecto a tu máquina local:
-     ```bash
-     git clone https://github.com/tu-repositorio/proyecto-cv.git
-     cd proyecto-cv
-     ```
+### **Windows**
+1. Instalar [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+2. Ejecutar los pasos estándar desde PowerShell o WSL.
 
-2. **Construir y Levantar los Contenedores**
-   - Ejecuta el comando:
-     ```bash
-     docker-compose up -d
-     ```
-   - Este comando construye la imagen `php-apache`, inicia MySQL y despliega la base de datos definida en `init.sql`.
+### **macOS**
+1. Instalar Docker Desktop.
+2. Configurar y levantar los servicios desde Terminal.
 
-3. **Acceder a la Aplicación**
-   - Abrir un navegador e ingresar la dirección:
-     - Página principal: [http://localhost:8080](http://localhost:8080)
-     - PHPMyAdmin: [http://localhost:8081](http://localhost:8081)
+### **Ubuntu**
+1. Instalar Docker:
+   ```bash
+   sudo apt update
+   sudo apt install docker.io docker-compose
+   ```
+2. Clonar el repositorio y seguir los pasos estándar.
 
-4. **Verificar la Base de Datos**
-   - Accede a PHPMyAdmin con:
-     - Usuario: `root`
-     - Contraseña: `root_password`
-   - Verifica que las tablas `usuarios` y `notas` están creadas.
-
-5. **Opcional: Reiniciar el Entorno**
-   - Usa el script `reset.sh` para limpiar datos y reiniciar contenedores:
-     ```bash
-     ./reset.sh
-     ```
+### **GitHub Workspaces**
+1. Iniciar un workspace desde el repositorio.
+2. Configurar Docker y levantar los contenedores.
 
 ---
 
-## **Lógica de la Web**
-
-### **Inicio de Sesión (`login.php`)**
-1. Valida las credenciales ingresadas contra la tabla `usuarios` en MySQL.
-2. Si las credenciales son correctas, inicia sesión y redirige a `inicio.php`.
-3. Después de 3 intentos fallidos, redirige a `error.php`.
-
-#### Código Clave:
-```php
-$stmt = $pdo->prepare("SELECT * FROM usuarios WHERE usuario = :usuario");
-$stmt->execute(['usuario' => $usuario]);
-$result = $stmt->fetch();
-
-if ($result && password_verify($password, $result['password'])) {
-    $_SESSION['user_id'] = $result['id'];
-    header("Location: inicio.php");
-    exit;
-}
-```
+## **Notas Importantes**
+- **Estilo Integrado**:
+  - Los estilos CSS están incluidos en los archivos PHP. Esto simplifica la gestión en proyectos pequeños, aunque no es la mejor práctica para proyectos más complejos.
+  
+> ⚠️ **Advertencia**  
+> Meto el estilo dentro de los archivos directamente sin separar a .css lo mejorare.
 
 ---
 
-### **Página Principal (`inicio.php`)**
-- Muestra información del CV, hobbies e idiomas.
-- Cambia de idioma dinámicamente según la selección.
-
-#### Código Clave:
-```php
-$idioma = isset($_GET['lang']) ? $_GET['lang'] : 'es';
-$langFile = __DIR__ . "/lang/{$idioma}.php";
-if (!file_exists($langFile)) {
-    $langFile = __DIR__ . "/lang/es.php";
-}
-$traducciones = include($langFile);
-```
-
----
-
-### **Cuestionario (`cuestionario.php`)**
-- Permite a los usuarios responder preguntas.
-- Las calificaciones se guardan en la tabla `notas`.
-
-#### Código Clave:
-```php
-$stmt = $pdo->prepare("INSERT INTO notas (id_usuario, nota) VALUES (:id_usuario, :nota)");
-$stmt->execute(['id_usuario' => $_SESSION['user_id'], 'nota' => $calificacion]);
-```
-
----
-
-### **Historial de Notas (`ver_notas.php`)**
-- Recupera las calificaciones del usuario desde la tabla `notas`.
-- Ordena las notas por fecha.
-
-#### Código Clave:
-```php
-$stmt = $pdo->prepare("SELECT * FROM notas WHERE id_usuario = :id_usuario ORDER BY fecha DESC");
-$stmt->execute(['id_usuario' => $_SESSION['user_id']]);
-$notas = $stmt->fetchAll();
-```
-
----
-
-## **Detalles de la Conexión a la Base de Datos**
-
-### Archivo `db.php`
-Este archivo maneja la conexión a MySQL utilizando PDO.
-
-```php
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES => false,
-];
-$pdo = new PDO($dsn, $user, $pass, $options);
-```
-
----
-
-## **Explicación Adicional de Conceptos Clave**
-
-### **Diferencias entre Docker y XAMPP**
-1. **Portabilidad**:
-   - Docker encapsula todo el entorno, haciéndolo replicable en cualquier sistema.
-   - XAMPP depende del sistema operativo y no es portable.
-
-2. **Aislamiento**:
-   - Docker ejecuta cada servicio en contenedores separados.
-   - XAMPP ejecuta todos los servicios en un único entorno compartido.
-
-3. **Actualización**:
-   - Docker permite actualizar imágenes sin afectar los datos existentes.
-   - XAMPP requiere actualizar manualmente cada componente.
-
----
-
+## **Conclusión**
+El **Proyecto-Final-UD1-IAPWE** combina diseño funcional, lógica robusta y un entorno de despliegue moderno para ilustrar las mejores prácticas en desarrollo web. Con un entorno Dockerizado, facilita la portabilidad y la réplica en múltiples plataformas, manteniendo un enfoque claro y bien documentado.
