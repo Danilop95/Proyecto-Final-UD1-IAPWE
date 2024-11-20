@@ -1,0 +1,11 @@
+# Ignorar la carpeta de la base de datos
+mysql_data/
+
+# Ignorar logs y archivos temporales
+*.log
+*.sql
+
+# Ignorar archivos y carpetas de IDEs/editores
+.vscode/
+.idea/
+

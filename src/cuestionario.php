@@ -13,21 +13,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Respuestas correctas
     $correctAnswers = [
-        'pregunta1' => '2005',
-        'pregunta2' => 'Renault',
-        'pregunta3' => 'España',
-        'pregunta4' => 'Aston Martin',
-        'pregunta5' => '33',
-        'pregunta6' => '2',
-        'pregunta7' => 'Minardi',
-        'pregunta8' => '2003',
-        'pregunta9' => 'F1',
-        'pregunta10' => 'Fernando Alonso Díaz'
+        'pregunta1' => 'clave primaria',
+        'pregunta2' => 'php',
+        'pregunta3' => 'SELECT',
+        'pregunta4' => 'POST',
+        'pregunta5' => 'HTML',
+        'pregunta6' => '10',
+        'pregunta7' => 'CSS',
+        'pregunta8' => 'foreign key',
+        'pregunta9' => 'Docker',
+        'pregunta10' => 'MySQL'
     ];
 
     // Revisar respuestas
     foreach ($correctAnswers as $key => $value) {
-        if (isset($_POST[$key]) && trim($_POST[$key]) === $value) {
+        if (isset($_POST[$key]) && trim(strtolower($_POST[$key])) === strtolower($value)) {
             $score++;
         }
     }
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuestionario sobre Fernando Alonso</title>
+    <title>Cuestionario de la Asignatura</title>
     <style>
         body {
             margin: 0;
@@ -94,10 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 5px;
             font-size: 16px;
         }
-        .question-group input[type="radio"] {
-            width: auto;
-            margin-right: 10px;
-        }
         button {
             background-color: #FFD700;
             color: black;
@@ -114,77 +110,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="container">
-        <h1>Cuestionario sobre Fernando Alonso</h1>
+        <h1>Cuestionario de la Asignatura</h1>
         <form method="POST" action="cuestionario.php">
             <!-- Pregunta 1 -->
             <div class="question-group">
-                <p>1. ¿En qué año ganó Fernando Alonso su primer campeonato mundial de Fórmula 1?</p>
-                <input type="radio" name="pregunta1" value="2005" id="2005"><label for="2005">2005</label><br>
-                <input type="radio" name="pregunta1" value="2006" id="2006"><label for="2006">2006</label>
+                <p>1. ¿Cómo se llama el identificador único en una tabla de base de datos?</p>
+                <input type="text" name="pregunta1" placeholder="Escribe tu respuesta aquí">
             </div>
 
             <!-- Pregunta 2 -->
             <div class="question-group">
-                <p>2. ¿Con qué equipo ganó Fernando Alonso sus dos campeonatos mundiales?</p>
-                <select name="pregunta2">
-                    <option value="Ferrari">Ferrari</option>
-                    <option value="Renault">Renault</option>
-                    <option value="McLaren">McLaren</option>
-                </select>
+                <p>2. ¿Qué lenguaje se usa principalmente para desarrollar páginas dinámicas en el backend?</p>
+                <input type="text" name="pregunta2" placeholder="Escribe tu respuesta aquí">
             </div>
 
             <!-- Pregunta 3 -->
             <div class="question-group">
-                <p>3. ¿De qué país es Fernando Alonso?</p>
+                <p>3. ¿Qué comando SQL se usa para seleccionar datos de una tabla?</p>
                 <input type="text" name="pregunta3" placeholder="Escribe tu respuesta aquí">
             </div>
 
             <!-- Pregunta 4 -->
             <div class="question-group">
-                <p>4. ¿Con qué equipo compite Fernando Alonso en 2023?</p>
-                <input type="radio" name="pregunta4" value="Aston Martin" id="aston"><label for="aston">Aston Martin</label><br>
-                <input type="radio" name="pregunta4" value="Mercedes" id="mercedes"><label for="mercedes">Mercedes</label>
+                <p>4. ¿Qué método HTTP se utiliza para enviar datos de un formulario?</p>
+                <select name="pregunta4">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                </select>
             </div>
 
             <!-- Pregunta 5 -->
             <div class="question-group">
-                <p>5. ¿Cuál es el famoso número de victorias que sus fans esperan que alcance?</p>
-                <input type="number" name="pregunta5" placeholder="Escribe tu respuesta aquí">
+                <p>5. ¿Cuál es el lenguaje estándar para el diseño de páginas web?</p>
+                <input type="text" name="pregunta5" placeholder="Escribe tu respuesta aquí">
             </div>
 
             <!-- Pregunta 6 -->
             <div class="question-group">
-                <p>6. ¿Cuántos campeonatos mundiales ha ganado Fernando Alonso?</p>
-                <input type="radio" name="pregunta6" value="2" id="2"><label for="2">2</label><br>
-                <input type="radio" name="pregunta6" value="1" id="1"><label for="1">1</label>
+                <p>6. ¿Cuántos registros devolverá el comando <code>LIMIT 10</code>?</p>
+                <input type="number" name="pregunta6" placeholder="Escribe tu respuesta aquí">
             </div>
 
             <!-- Pregunta 7 -->
             <div class="question-group">
-                <p>7. ¿Con qué equipo debutó Fernando Alonso en la Fórmula 1?</p>
+                <p>7. ¿Qué lenguaje se utiliza para estilizar las páginas web?</p>
                 <input type="text" name="pregunta7" placeholder="Escribe tu respuesta aquí">
             </div>
 
             <!-- Pregunta 8 -->
             <div class="question-group">
-                <p>8. ¿En qué año logró su primera victoria en Fórmula 1?</p>
-                <input type="radio" name="pregunta8" value="2003" id="2003"><label for="2003">2003</label><br>
-                <input type="radio" name="pregunta8" value="2004" id="2004"><label for="2004">2004</label>
+                <p>8. ¿Qué clave sirve para relacionar tablas en una base de datos?</p>
+                <input type="text" name="pregunta8" placeholder="Escribe tu respuesta aquí">
             </div>
 
             <!-- Pregunta 9 -->
             <div class="question-group">
-                <p>9. ¿En qué categoría compite Fernando Alonso actualmente?</p>
-                <select name="pregunta9">
-                    <option value="F1">F1</option>
-                    <option value="IndyCar">IndyCar</option>
-                    <option value="WEC">WEC</option>
-                </select>
+                <p>9. ¿Qué tecnología usamos en este proyecto para desplegar el entorno?</p>
+                <input type="text" name="pregunta9" placeholder="Escribe tu respuesta aquí">
             </div>
 
             <!-- Pregunta 10 -->
             <div class="question-group">
-                <p>10. ¿Cuál es el nombre completo de Fernando Alonso?</p>
+                <p>10. ¿Qué motor de bases de datos utilizamos en este proyecto?</p>
                 <input type="text" name="pregunta10" placeholder="Escribe tu respuesta aquí">
             </div>
 
