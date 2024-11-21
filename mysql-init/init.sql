@@ -5,7 +5,8 @@ USE cv_web;
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    genero ENUM('hombre', 'mujer', 'otros') NOT NULL
 );
 
 -- Tabla de notas

@@ -8,6 +8,8 @@ $error_message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario = $_POST['usuario'];
     $password = $_POST['password'];
+    $genero = $_POST['genero'];
+
 
     // Consulta para buscar al usuario
     $stmt = $pdo->prepare('SELECT * FROM usuarios WHERE usuario = :usuario');
@@ -121,6 +123,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <label for="password">Contraseña</label>
             <input type="password" name="password" id="password" required>
+<!-- genero -->
+            <label for="genero">Genero</label>
+            <select name="genero" id="genero" required>
+                <option value="Hombre">Hombre</option>
+                <option value="Mujer">Mujer</option>
+                <option value="Otro">Otro</option>
+            </select>
+            
             
             <button type="submit">Iniciar sesión</button>
         </form>
